@@ -1,16 +1,13 @@
-package com.mikepenz.crossfader.util;
+package com.mikepenz.crossfader.util
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.res.Resources;
-import android.util.DisplayMetrics;
-import android.view.View;
+import android.content.Context
+import android.view.View
 
 /**
  * Created by mikepenz on 15.03.14.
  */
-@SuppressLint("InlinedApi")
-public class UIUtils {
+@Suppress("unused")
+object UIUtils {
     /**
      * This method converts dp unit to equivalent pixels, depending on device density.
      *
@@ -18,11 +15,10 @@ public class UIUtils {
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent px equivalent to dp depending on device density
      */
-    public static float convertDpToPixel(float dp, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float px = dp * (metrics.densityDpi / 160f);
-        return px;
+    fun convertDpToPixel(dp: Float, context: Context): Float {
+        val resources = context.resources
+        val metrics = resources.displayMetrics
+        return dp * (metrics.densityDpi / 160f)
     }
 
     /**
@@ -32,11 +28,10 @@ public class UIUtils {
      * @param context Context to get resources and device specific display metrics
      * @return A float value to represent dp equivalent to px value
      */
-    public static float convertPixelsToDp(float px, Context context) {
-        Resources resources = context.getResources();
-        DisplayMetrics metrics = resources.getDisplayMetrics();
-        float dp = px / (metrics.densityDpi / 160f);
-        return dp;
+    fun convertPixelsToDp(px: Float, context: Context): Float {
+        val resources = context.resources
+        val metrics = resources.displayMetrics
+        return px / (metrics.densityDpi / 160f)
     }
 
     /**
@@ -47,18 +42,14 @@ public class UIUtils {
      * @param view - view object to compare
      * @return true if the points are within view bounds, false otherwise
      */
-    public static boolean isPointInsideView(float x, float y, View view) {
-        int location[] = new int[2];
-        view.getLocationOnScreen(location);
-        int viewX = location[0];
-        int viewY = location[1];
+    fun isPointInsideView(x: Float, y: Float, view: View): Boolean {
+        val location = IntArray(2)
+        view.getLocationOnScreen(location)
+        val viewX = location[0]
+        val viewY = location[1]
 
         //point is inside view bounds
-        if ((viewX < x && x < (viewX + view.getWidth())) &&
-                (viewY < y && y < (viewY + view.getHeight()))) {
-            return true;
-        } else {
-            return false;
-        }
+        return viewX < x && x < viewX + view.width &&
+                viewY < y && y < viewY + view.height
     }
 }

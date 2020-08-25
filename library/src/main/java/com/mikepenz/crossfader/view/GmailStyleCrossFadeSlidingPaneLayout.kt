@@ -1,11 +1,13 @@
-package com.mikepenz.crossfader.view;
+package com.mikepenz.crossfader.view
 
-import android.content.Context;
-import android.util.AttributeSet;
-import android.view.MotionEvent;
-import android.widget.LinearLayout;
-
-import com.mikepenz.crossfader.util.UIUtils;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.AttributeSet
+import android.view.MotionEvent
+import android.view.View
+import android.widget.LinearLayout
+import com.mikepenz.crossfader.R
+import com.mikepenz.crossfader.util.UIUtils
 
 /**
  * Created on 05.11.15
@@ -13,47 +15,35 @@ import com.mikepenz.crossfader.util.UIUtils;
  * @author github @androideveloper (Roland Yeghiazaryan)
  * @author github @suren1525 (Suren Khachatryan)
  */
-public class GmailStyleCrossFadeSlidingPaneLayout extends CrossFadeSlidingPaneLayout {
-    private boolean isEventHandled = false;
+class GmailStyleCrossFadeSlidingPaneLayout : CrossFadeSlidingPaneLayout {
+    private var isEventHandled = false
 
-    public GmailStyleCrossFadeSlidingPaneLayout(Context context) {
-        super(context);
+    constructor(context: Context) : super(context)
+    constructor(context: Context, attrs: AttributeSet?) : super(context, attrs)
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int) : super(context, attrs, defStyle)
+
+    override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
+        return if (isOutOfSecond(ev)) {
+            false
+        } else super.onInterceptTouchEvent(ev)
     }
 
-    public GmailStyleCrossFadeSlidingPaneLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(ev: MotionEvent): Boolean {
+        return if (isOutOfSecond(ev)) {
+            false
+        } else super.onTouchEvent(ev)
     }
 
-    public GmailStyleCrossFadeSlidingPaneLayout(Context context, AttributeSet attrs, int defStyle) {
-        super(context, attrs, defStyle);
-    }
-
-    @Override
-    public boolean onInterceptTouchEvent(MotionEvent ev) {
-        if (isOutOfSecond(ev)) {
-            return false;
+    private fun isOutOfSecond(ev: MotionEvent): Boolean {
+        if (MotionEvent.ACTION_UP == ev.action || MotionEvent.ACTION_CANCEL == ev.action) {
+            isEventHandled = false
         }
-        return super.onInterceptTouchEvent(ev);
-    }
-
-    @Override
-    public boolean onTouchEvent(MotionEvent ev) {
-        if (isOutOfSecond(ev)) {
-            return false;
+        val mCrossFadeSecond = findViewById<View>(R.id.second) as LinearLayout
+        if (!isOpen && ev.action == MotionEvent.ACTION_DOWN && !UIUtils.isPointInsideView(ev.rawX, ev.rawY, mCrossFadeSecond) || isEventHandled) {
+            isEventHandled = true
+            return true
         }
-        return super.onTouchEvent(ev);
-    }
-
-    private boolean isOutOfSecond(MotionEvent ev) {
-        if (MotionEvent.ACTION_UP == ev.getAction() || MotionEvent.ACTION_CANCEL == ev.getAction()) {
-            isEventHandled = false;
-        }
-        LinearLayout mCrossFadeSecond = (LinearLayout) findViewById(com.mikepenz.crossfader.R.id.second);
-        if ((!isOpen() && ev.getAction() == MotionEvent.ACTION_DOWN && !UIUtils.isPointInsideView(ev.getRawX(), ev.getRawY(), mCrossFadeSecond)) || isEventHandled) {
-            isEventHandled = true;
-            return true;
-
-        }
-        return false;
+        return false
     }
 }

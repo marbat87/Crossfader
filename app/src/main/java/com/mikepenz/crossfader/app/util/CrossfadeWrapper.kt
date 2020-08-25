@@ -1,22 +1,14 @@
-package com.mikepenz.crossfader.app.util;
+package com.mikepenz.crossfader.app.util
 
-import com.mikepenz.crossfader.Crossfader;
-import com.mikepenz.materialdrawer.interfaces.ICrossfader;
+import com.mikepenz.crossfader.Crossfader
+import com.mikepenz.materialdrawer.interfaces.ICrossfader
 
-public class CrossfadeWrapper implements ICrossfader {
-    private Crossfader mCrossfader;
-
-    public CrossfadeWrapper(Crossfader crossfader) {
-        this.mCrossfader = crossfader;
+class CrossfadeWrapper(private val mCrossfader: Crossfader<*>) : ICrossfader {
+    override fun crossfade() {
+        mCrossfader.crossFade()
     }
 
-    @Override
-    public void crossfade() {
-        mCrossfader.crossFade();
-    }
-
-    @Override
-    public boolean isCrossfaded() {
-        return mCrossfader.isCrossFaded();
+    override fun isCrossfaded(): Boolean {
+        return mCrossfader.isCrossFaded
     }
 }

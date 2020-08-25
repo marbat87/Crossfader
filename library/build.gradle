@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion setup.compileSdk
@@ -28,6 +29,11 @@ android {
 dependencies {
     implementation "androidx.appcompat:appcompat:${versions.androidX}"
     implementation "androidx.slidingpanelayout:slidingpanelayout:${versions.slidingPaneLayout}"
+    implementation "androidx.core:core-ktx:1.3.1"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 apply from: '../gradle-release.gradle'
+repositories {
+    mavenCentral()
+}

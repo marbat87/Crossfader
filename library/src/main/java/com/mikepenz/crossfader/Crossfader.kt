@@ -1,34 +1,26 @@
-package com.mikepenz.crossfader;
+package com.mikepenz.crossfader
 
-import android.graphics.Color;
-import android.os.Build;
-import android.os.Bundle;
-import androidx.annotation.LayoutRes;
-import androidx.slidingpanelayout.widget.SlidingPaneLayout;
-import android.util.DisplayMetrics;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.LinearLayout;
-
-import com.mikepenz.crossfader.view.ICrossFadeSlidingPaneLayout;
+import android.graphics.Color
+import android.os.Build
+import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.LinearLayout
+import androidx.annotation.LayoutRes
+import androidx.slidingpanelayout.widget.SlidingPaneLayout
+import androidx.slidingpanelayout.widget.SlidingPaneLayout.PanelSlideListener
+import com.mikepenz.crossfader.view.ICrossFadeSlidingPaneLayout
 
 /**
  * Created by mikepenz on 15.07.15.
  */
-public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayout> {
-    /**
-     * BUNDLE param to store the selection
-     */
-    protected static final String BUNDLE_CROSS_FADED = "bundle_cross_faded";
-
-    private T mCrossFadeSlidingPaneLayout;
-
-    public Crossfader() {
-    }
-
-    private int mBaseLayout = R.layout.crossfader_base;
+@Suppress("unused")
+class Crossfader<T> where T : SlidingPaneLayout, T : ICrossFadeSlidingPaneLayout {
+    lateinit var crossFadeSlidingPaneLayout: T
+        private set
+    private var mBaseLayout = R.layout.crossfader_base
 
     /**
      * defines the base layout to be used for this crossfader
@@ -37,9 +29,9 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param baseLayout
      * @return
      */
-    public Crossfader withBaseLayout(@LayoutRes int baseLayout) {
-        this.mBaseLayout = baseLayout;
-        return this;
+    fun withBaseLayout(@LayoutRes baseLayout: Int): Crossfader<*> {
+        mBaseLayout = baseLayout
+        return this
     }
 
     /**
@@ -49,12 +41,16 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      *
      * @return
      */
-    public Crossfader withGmailStyleSwiping() {
-        this.mBaseLayout = R.layout.crossfader_gmail_style;
-        return this;
+    fun withGmailStyleSwiping(): Crossfader<*> {
+        mBaseLayout = R.layout.crossfader_gmail_style
+        return this
     }
 
-    private View mContent = null;
+    /**
+     * @return the content view
+     */
+    lateinit var content: View
+        private set
 
     /**
      * define the content which is shown on the right of the crossfader
@@ -62,13 +58,21 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param content
      * @return
      */
-    public Crossfader withContent(View content) {
-        this.mContent = content;
-        return this;
+    fun withContent(content: View): Crossfader<*> {
+        this.content = content
+        return this
     }
 
-    private View mFirst = null;
-    private int mFirstWidth = -1;
+    /**
+     * @return the first (default) view
+     */
+    private var first: View? = null
+
+    /**
+     * @return the width of the first (default) view
+     */
+    var firstWidth = -1
+        private set
 
     /**
      * define the default (first) view of the crossfader
@@ -77,14 +81,22 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param width
      * @return
      */
-    public Crossfader withFirst(View first, int width) {
-        this.mFirst = first;
-        this.mFirstWidth = width;
-        return this;
+    fun withFirst(first: View?, width: Int): Crossfader<*> {
+        this.first = first
+        firstWidth = width
+        return this
     }
 
-    private View mSecond = null;
-    private int mSecondWidth = -1;
+    /**
+     * @return the second (slided) view
+     */
+    private var second: View? = null
+
+    /**
+     * @return the width of the second (slided) view
+     */
+    var secondWidth = -1
+        private set
 
     /**
      * define the slided (second) view of the crossfader
@@ -93,10 +105,10 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param width
      * @return
      */
-    public Crossfader withSecond(View first, int width) {
-        this.mSecond = first;
-        this.mSecondWidth = width;
-        return this;
+    fun withSecond(first: View?, width: Int): Crossfader<*> {
+        second = first
+        secondWidth = width
+        return this
     }
 
     /**
@@ -108,14 +120,14 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param secondWidth
      * @return
      */
-    public Crossfader withStructure(View first, int firstWidth, View second, int secondWidth) {
-        withFirst(first, firstWidth);
-        withSecond(second, secondWidth);
-        return this;
+    fun withStructure(first: View?, firstWidth: Int, second: View?, secondWidth: Int): Crossfader<*> {
+        withFirst(first, firstWidth)
+        withSecond(second, secondWidth)
+        return this
     }
 
     // savedInstance to restore state
-    protected Bundle mSavedInstance;
+    private var mSavedInstance: Bundle? = null
 
     /**
      * Set the Bundle (savedInstance) which is passed by the activity.
@@ -124,13 +136,13 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param savedInstance
      * @return
      */
-    public Crossfader withSavedInstance(Bundle savedInstance) {
-        this.mSavedInstance = savedInstance;
-        return this;
+    fun withSavedInstance(savedInstance: Bundle?): Crossfader<*> {
+        mSavedInstance = savedInstance
+        return this
     }
 
     // enable the panelSlide
-    protected boolean mCanSlide = true;
+    private var mCanSlide = true
 
     /**
      * Allow the panel to slide
@@ -138,16 +150,14 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param canSlide
      * @return
      */
-    public Crossfader withCanSlide(boolean canSlide) {
-        this.mCanSlide = canSlide;
-        if (mCrossFadeSlidingPaneLayout != null) {
-            mCrossFadeSlidingPaneLayout.setCanSlide(mCanSlide);
-        }
-        return this;
+    fun withCanSlide(canSlide: Boolean): Crossfader<*> {
+        mCanSlide = canSlide
+        crossFadeSlidingPaneLayout.setCanSlide(mCanSlide)
+        return this
     }
 
     //a panelSlideListener
-    protected SlidingPaneLayout.PanelSlideListener mPanelSlideListener;
+    private var mPanelSlideListener: PanelSlideListener? = null
 
     /**
      * set a PanelSlideListener used with the CrossFadeSlidingPaneLayout
@@ -155,16 +165,14 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param panelSlideListener
      * @return
      */
-    public Crossfader withPanelSlideListener(SlidingPaneLayout.PanelSlideListener panelSlideListener) {
-        this.mPanelSlideListener = panelSlideListener;
-        if (mCrossFadeSlidingPaneLayout != null) {
-            mCrossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener);
-        }
-        return this;
+    fun withPanelSlideListener(panelSlideListener: PanelSlideListener?): Crossfader<*> {
+        mPanelSlideListener = panelSlideListener
+        crossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener)
+        return this
     }
 
     // if enabled we use a PanelSlideListener to resize the content panel instead of moving it out
-    protected boolean mResizeContentPanel = false;
+    private var mResizeContentPanel = false
 
     /**
      * if enabled we use a PanelSlideListener to resize the content panel instead of moving it out
@@ -172,105 +180,53 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param resizeContentPanel
      * @return
      */
-    public Crossfader withResizeContentPanel(boolean resizeContentPanel) {
-        this.mResizeContentPanel = resizeContentPanel;
-        enableResizeContentPanel(mResizeContentPanel);
-        return this;
+    fun withResizeContentPanel(resizeContentPanel: Boolean): Crossfader<*> {
+        mResizeContentPanel = resizeContentPanel
+        enableResizeContentPanel(mResizeContentPanel)
+        return this
     }
-
 
     /**
      * a small helper class to enable resizing of the content panel / or keep the default behavior
      */
-    private void enableResizeContentPanel(boolean enable) {
+    private fun enableResizeContentPanel(enable: Boolean) {
         if (enable) {
             //activate the resizeFunction
-            DisplayMetrics displaymetrics = getContent().getContext().getResources().getDisplayMetrics();
-            final int screenWidth = displaymetrics.widthPixels;
-
-            ViewGroup.LayoutParams lp = getContent().getLayoutParams();
-            lp.width = screenWidth - getSecondWidth();
-            getContent().setLayoutParams(lp);
-
-            if (mCrossFadeSlidingPaneLayout != null) {
-                mCrossFadeSlidingPaneLayout.setPanelSlideListener(new SlidingPaneLayout.PanelSlideListener() {
-                    @Override
-                    public void onPanelSlide(View panel, float slideOffset) {
-                        ViewGroup.LayoutParams lp = getContent().getLayoutParams();
-                        lp.width = (int) (screenWidth - getSecondWidth() - ((getFirstWidth() - getSecondWidth()) * slideOffset));
-                        getContent().setLayoutParams(lp);
-
-                        if (mPanelSlideListener != null) {
-                            mPanelSlideListener.onPanelSlide(panel, slideOffset);
-                        }
+            val displaymetrics = content.context.resources.displayMetrics
+            val screenWidth = displaymetrics.widthPixels
+            val lp = content.layoutParams
+            lp.width = screenWidth - secondWidth
+            content.layoutParams = lp
+            crossFadeSlidingPaneLayout.setPanelSlideListener(object : PanelSlideListener {
+                override fun onPanelSlide(panel: View, slideOffset: Float) {
+                    val lp1 = content.layoutParams
+                    lp1?.width = (screenWidth - secondWidth - (firstWidth - secondWidth) * slideOffset).toInt()
+                    content.layoutParams = lp1
+                    if (mPanelSlideListener != null) {
+                        mPanelSlideListener!!.onPanelSlide(panel, slideOffset)
                     }
+                }
 
-                    @Override
-                    public void onPanelOpened(View panel) {
-                        if (mPanelSlideListener != null) {
-                            mPanelSlideListener.onPanelOpened(panel);
-                        }
+                override fun onPanelOpened(panel: View) {
+                    if (mPanelSlideListener != null) {
+                        mPanelSlideListener!!.onPanelOpened(panel)
                     }
+                }
 
-                    @Override
-                    public void onPanelClosed(View panel) {
-                        if (mPanelSlideListener != null) {
-                            mPanelSlideListener.onPanelClosed(panel);
-                        }
+                override fun onPanelClosed(panel: View) {
+                    if (mPanelSlideListener != null) {
+                        mPanelSlideListener!!.onPanelClosed(panel)
                     }
-                });
-            }
+                }
+            })
         } else {
             //reset the resizeFunction
-            ViewGroup.LayoutParams lp = getContent().getLayoutParams();
-            lp.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            getContent().setLayoutParams(lp);
-
-            if (mCrossFadeSlidingPaneLayout != null) {
-                mCrossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener);
-            }
+            val lp = content.layoutParams
+            lp.width = ViewGroup.LayoutParams.MATCH_PARENT
+            content.layoutParams = lp
+            crossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener)
         }
     }
-
-    public T getCrossFadeSlidingPaneLayout() {
-        return mCrossFadeSlidingPaneLayout;
-    }
-
-    /**
-     * @return the content view
-     */
-    public View getContent() {
-        return mContent;
-    }
-
-    /**
-     * @return the first (default) view
-     */
-    public View getFirst() {
-        return mFirst;
-    }
-
-    /**
-     * @return the width of the first (default) view
-     */
-    public int getFirstWidth() {
-        return mFirstWidth;
-    }
-
-    /**
-     * @return the second (slided) view
-     */
-    public View getSecond() {
-        return mSecond;
-    }
-
-    /**
-     * @return the width of the second (slided) view
-     */
-    public int getSecondWidth() {
-        return mSecondWidth;
-    }
-
 
     /**
      * builds the crossfader and it's content views
@@ -278,65 +234,64 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      *
      * @return
      */
-    public Crossfader build() {
-        if (mFirstWidth < mSecondWidth) {
-            throw new RuntimeException("the first layout has to be the layout with the greater width");
+    fun build(): Crossfader<*> {
+        if (firstWidth < secondWidth) {
+            throw RuntimeException("the first layout has to be the layout with the greater width")
         }
 
         //get the layout which should be replaced by the CrossFadeSlidingPaneLayout
-        ViewGroup container = ((ViewGroup) mContent.getParent());
+        val container = content.parent as ViewGroup
 
         //remove the content from it's parent
-        container.removeView(mContent);
+        container.removeView(content)
 
         //create the cross fader container
-        mCrossFadeSlidingPaneLayout = (T) LayoutInflater.from(mContent.getContext()).inflate(mBaseLayout, container, false);
-        container.addView(mCrossFadeSlidingPaneLayout);
+        @Suppress("UNCHECKED_CAST")
+        crossFadeSlidingPaneLayout = LayoutInflater.from(content.context).inflate(mBaseLayout, container, false) as T
+        container.addView(crossFadeSlidingPaneLayout)
 
         //find the container layouts
-        FrameLayout mCrossFadePanel = (FrameLayout) mCrossFadeSlidingPaneLayout.findViewById(R.id.panel);
-        LinearLayout mCrossFadeFirst = (LinearLayout) mCrossFadeSlidingPaneLayout.findViewById(R.id.first);
-        LinearLayout mCrossFadeSecond = (LinearLayout) mCrossFadeSlidingPaneLayout.findViewById(R.id.second);
-        LinearLayout mCrossFadeContainer = (LinearLayout) mCrossFadeSlidingPaneLayout.findViewById(R.id.content);
+        val mCrossFadePanel = crossFadeSlidingPaneLayout.findViewById<FrameLayout>(R.id.panel)
+        val mCrossFadeFirst = crossFadeSlidingPaneLayout.findViewById<LinearLayout>(R.id.first)
+        val mCrossFadeSecond = crossFadeSlidingPaneLayout.findViewById<LinearLayout>(R.id.second)
+        val mCrossFadeContainer = crossFadeSlidingPaneLayout.findViewById<LinearLayout>(R.id.content)
 
         //define the widths
-        setWidth(mCrossFadePanel, mFirstWidth);
-        setWidth(mCrossFadeFirst, mFirstWidth);
-        setWidth(mCrossFadeSecond, mSecondWidth);
-        setLeftMargin(mCrossFadeContainer, mSecondWidth);
+        setWidth(mCrossFadePanel, firstWidth)
+        setWidth(mCrossFadeFirst, firstWidth)
+        setWidth(mCrossFadeSecond, secondWidth)
+        setLeftMargin(mCrossFadeContainer, secondWidth)
 
         //add content to the panel
-        mCrossFadeFirst.addView(mFirst, mFirstWidth, ViewGroup.LayoutParams.MATCH_PARENT);
-        mCrossFadeSecond.addView(mSecond, mSecondWidth, ViewGroup.LayoutParams.MATCH_PARENT);
+        mCrossFadeFirst.addView(first, firstWidth, ViewGroup.LayoutParams.MATCH_PARENT)
+        mCrossFadeSecond.addView(second, secondWidth, ViewGroup.LayoutParams.MATCH_PARENT)
 
         //add back main content
-        mCrossFadeContainer.addView(mContent, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        mCrossFadeContainer.addView(content, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
 
         // try to restore all saved values again
-        boolean cross_faded = false;
+        var crossFaded = false
         if (mSavedInstance != null) {
-            cross_faded = mSavedInstance.getBoolean(BUNDLE_CROSS_FADED, false);
+            crossFaded = mSavedInstance!!.getBoolean(BUNDLE_CROSS_FADED, false)
         }
-
-        if (cross_faded) {
-            mCrossFadeSlidingPaneLayout.setOffset(1);
+        if (crossFaded) {
+            crossFadeSlidingPaneLayout.setOffset(1f)
         } else {
-            mCrossFadeSlidingPaneLayout.setOffset(0);
+            crossFadeSlidingPaneLayout.setOffset(0f)
         }
 
         //set the PanelSlideListener for the CrossFadeSlidingPaneLayout
-        mCrossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener);
+        crossFadeSlidingPaneLayout.setPanelSlideListener(mPanelSlideListener)
 
         //set the ability to slide
-        mCrossFadeSlidingPaneLayout.setCanSlide(mCanSlide);
+        crossFadeSlidingPaneLayout.setCanSlide(mCanSlide)
 
         //define that we don't want a slider color
-        mCrossFadeSlidingPaneLayout.setSliderFadeColor(Color.TRANSPARENT);
+        crossFadeSlidingPaneLayout.sliderFadeColor = Color.TRANSPARENT
 
         //enable / disable the resize functionality
-        enableResizeContentPanel(mResizeContentPanel);
-
-        return this;
+        enableResizeContentPanel(mResizeContentPanel)
+        return this
     }
 
     /**
@@ -344,18 +299,17 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      *
      * @return
      */
-    public boolean isCrossFaded() {
-        return mCrossFadeSlidingPaneLayout.isOpen();
-    }
+    val isCrossFaded: Boolean
+        get() = crossFadeSlidingPaneLayout.isOpen
 
     /**
      * crossfade the current crossfader (toggle between first and second view)
      */
-    public void crossFade() {
-        if (mCrossFadeSlidingPaneLayout.isOpen()) {
-            mCrossFadeSlidingPaneLayout.closePane();
+    fun crossFade() {
+        if (crossFadeSlidingPaneLayout.isOpen) {
+            crossFadeSlidingPaneLayout.closePane()
         } else {
-            mCrossFadeSlidingPaneLayout.openPane();
+            crossFadeSlidingPaneLayout.openPane()
         }
     }
 
@@ -365,11 +319,9 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param savedInstanceState
      * @return
      */
-    public Bundle saveInstanceState(Bundle savedInstanceState) {
-        if (savedInstanceState != null) {
-            savedInstanceState.putBoolean(BUNDLE_CROSS_FADED, mCrossFadeSlidingPaneLayout.isOpen());
-        }
-        return savedInstanceState;
+    fun saveInstanceState(savedInstanceState: Bundle?): Bundle? {
+        savedInstanceState?.putBoolean(BUNDLE_CROSS_FADED, crossFadeSlidingPaneLayout.isOpen)
+        return savedInstanceState
     }
 
     /**
@@ -378,10 +330,10 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param view
      * @param width
      */
-    protected void setWidth(View view, int width) {
-        ViewGroup.LayoutParams lp = view.getLayoutParams();
-        lp.width = width;
-        view.setLayoutParams(lp);
+    private fun setWidth(view: View, width: Int) {
+        val lp = view.layoutParams
+        lp.width = width
+        view.layoutParams = lp
     }
 
     /**
@@ -390,15 +342,21 @@ public class Crossfader<T extends SlidingPaneLayout & ICrossFadeSlidingPaneLayou
      * @param view
      * @param leftMargin
      */
-    protected void setLeftMargin(View view, int leftMargin) {
-        SlidingPaneLayout.LayoutParams lp = (SlidingPaneLayout.LayoutParams) view.getLayoutParams();
-        lp.leftMargin = leftMargin;
-        lp.rightMargin = 0;
-
+    private fun setLeftMargin(view: View, leftMargin: Int) {
+        val lp = view.layoutParams as SlidingPaneLayout.LayoutParams
+        lp.leftMargin = leftMargin
+        lp.rightMargin = 0
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            lp.setMarginStart(leftMargin);
-            lp.setMarginEnd(0);
+            lp.marginStart = leftMargin
+            lp.marginEnd = 0
         }
-        view.setLayoutParams(lp);
+        view.layoutParams = lp
+    }
+
+    companion object {
+        /**
+         * BUNDLE param to store the selection
+         */
+        private const val BUNDLE_CROSS_FADED = "bundle_cross_faded"
     }
 }
